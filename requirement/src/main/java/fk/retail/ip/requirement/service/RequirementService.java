@@ -2,6 +2,7 @@ package fk.retail.ip.requirement.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import fk.retail.ip.core.poi.SpreadSheetReader;
@@ -169,15 +170,16 @@ public class RequirementService {
         startIndex = (pageNo-1)*PAGE_SIZE;
         endIndex = (projectionIds.size() >= pageNo*PAGE_SIZE) ? (pageNo*PAGE_SIZE) : projectionIds.size();
         batchProjectionIds = projectionIds.subList(startIndex, endIndex);
-        requirements = requirementRepository.findByProjectionIds(batchProjectionIds);
+        requirements = requirementRepository.findRequirements(batchProjectionIds, state, Lists.newArrayList());
         log.info("Search Request for {} number of requirements", requirements.size());
         Map<String, List<RequirementSearchLineItem>> fsnToSearchItemsMap =  searchCommandProvider.get().execute(requirements);
+        log.info("Search Request for {} number of fsns", fsnToSearchItemsMap.size());
         SearchResponse.GroupedResponse groupedResponse = new SearchResponse.GroupedResponse(projectionIds.size(), PAGE_SIZE);
         for (String fsn : fsnToSearchItemsMap.keySet()) {
             SearchResponse searchResponse = new SearchResponse(fsnToSearchItemsMap.get(fsn));
             groupedResponse.getProjections().add(searchResponse);
         }
-        log.info("Search Requirement Response " + groupedResponse);
+        log.info("Got Search Response for Requirement");
         return groupedResponse;
     }
 
