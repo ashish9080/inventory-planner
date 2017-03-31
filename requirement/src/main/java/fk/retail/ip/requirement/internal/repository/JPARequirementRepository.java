@@ -85,6 +85,7 @@ public class JPARequirementRepository extends SimpleJpaGenericRepository<Require
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Requirement> criteriaQuery = criteriaBuilder.createQuery(Requirement.class);
         Root<Requirement> requirementRoot = criteriaQuery.from(Requirement.class);
+        requirementRoot.fetch("requirementSnapshot");
         CriteriaQuery<Requirement> select = criteriaQuery.select(requirementRoot);
         List<Predicate> predicates = Lists.newArrayList();
         Predicate predicate = criteriaBuilder.equal(requirementRoot.get("current"), 1);
